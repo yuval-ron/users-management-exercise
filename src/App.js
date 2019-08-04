@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {fetchUsers} from './actions'
+import UsersManagmentAppBar from './components/AppBar'
+import UsersManagmentList from './components/UsersManagmentList'
+import UserModal from './components/UserModal'
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  componentDidMount() {
+    const {fetchUsers} = this.props
+    fetchUsers()
+  }
+
+  onUserClick = (user) => {
+    const {router} = this.props
+    this.setState({user})
+    router.replace(`/user-management/${user.phone}`)
+  }
+
+  render() {
+    const {users} = this.props
+    return (
+      <div className="App">
+        <UsersManagmentAppBar />
+        <UsersManagmentList users={users} onUserClick={this.onUserClick}/>
+
+      </div>
+    );
+  }
+}
+// {children}
+const mapStateToProps = (store) =>{
+  return {
+    users: store.users
+  }
 }
 
-export default App;
+const mapDispatchToProps = {fetchUsers}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
